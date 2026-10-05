@@ -9,6 +9,7 @@ import {
   assertITunesLookupResponseDTO,
   isITunesLookupDTO,
   isITunesLookupResponseDTO,
+  normalizeLookupPayload,
   parseITunesLookupContents,
 } from './itunesLookup.dto'
 import { isNumber, isRecord, isString } from './typeGuards'
@@ -318,5 +319,26 @@ describe('itunesLookup.dto guards', () => {
         ],
       }),
     ).toBe(false)
+  })
+
+  it('normalizes direct lookup JSON into an AllOrigins-compatible wrapper', () => {
+    const normalized = normalizeLookupPayload({
+      resultCount: 0,
+      results: [],
+    })
+
+    expect(JSON.parse(normalized.contents)).toEqual({
+      resultCount: 0,
+      results: [],
+    })
+  })
+
+  it('keeps AllOrigins wrappers unchanged when normalizing', () => {
+    const wrapped = {
+      contents: '{"resultCount":0,"results":[]}',
+      status: { http_code: 200 },
+    }
+
+    expect(normalizeLookupPayload(wrapped)).toEqual(wrapped)
   })
 })

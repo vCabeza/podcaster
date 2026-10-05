@@ -140,6 +140,26 @@ export function assertITunesLookupResponseDTO(
   return value
 }
 
+/**
+ * Normalizes either an AllOrigins wrapper or a direct iTunes lookup payload
+ * into the shared `{ contents: string }` response shape used by mappers.
+ */
+export function normalizeLookupPayload(
+  payload: unknown,
+): ITunesLookupResponseDTO {
+  if (isITunesLookupResponseDTO(payload)) {
+    return payload
+  }
+
+  if (isITunesLookupDTO(payload)) {
+    return {
+      contents: JSON.stringify(payload),
+    }
+  }
+
+  throw new Error('Unexpected iTunes lookup response shape')
+}
+
 export function parseITunesLookupContents(contents: string): ITunesLookupDTO {
   let parsed: unknown
 
