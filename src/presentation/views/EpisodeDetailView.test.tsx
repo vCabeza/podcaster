@@ -1,17 +1,25 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
 import { createMemoryRouter, RouterProvider } from 'react-router-dom'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { LoadingProvider } from '../../application/context/LoadingContext'
 import type { PodcastRepository } from '../../domain/repositories/PodcastRepository'
 import { RootLayout } from '../layouts/RootLayout'
+import { HomeView } from './HomeView'
 import { podcastDetailFixture } from './fixtures/podcastDetail.fixture'
 import { EpisodeDetailView } from './EpisodeDetailView'
+import { PodcastDetailView } from './PodcastDetailView'
 
 function renderEpisodeDetail(
   repository: PodcastRepository,
-  path = '/podcast/360084272/episode/1001',
+  options?: {
+    path?: string
+    initialEntries?: string[]
+  },
 ) {
+  const path = options?.path ?? '/podcast/360084272/episode/1001'
+  const initialEntries = options?.initialEntries ?? [path]
+
   const router = createMemoryRouter(
     [
       {
@@ -19,13 +27,24 @@ function renderEpisodeDetail(
         element: <RootLayout />,
         children: [
           {
+            index: true,
+            element: <HomeView repository={repository} />,
+          },
+          {
+            path: 'podcast/:podcastId',
+            element: <PodcastDetailView repository={repository} />,
+          },
+          {
             path: 'podcast/:podcastId/episode/:episodeId',
             element: <EpisodeDetailView repository={repository} />,
           },
         ],
       },
     ],
-    { initialEntries: [path] },
+    {
+      initialEntries,
+      initialIndex: initialEntries.length - 1,
+    },
   )
 
   function Wrapper({ children }: { children: ReactNode }) {
@@ -36,9 +55,13 @@ function renderEpisodeDetail(
 }
 
 describe('EpisodeDetailView', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('renders sidebar links, sanitized description and audio source', async () => {
     const repository: PodcastRepository = {
-      getTopPodcasts: vi.fn(),
+      getTopPodcasts: vi.fn().mockResolvedValue([]),
       getPodcastDetail: vi.fn().mockResolvedValue(podcastDetailFixture),
     }
 
@@ -72,14 +95,58 @@ describe('EpisodeDetailView', () => {
     )
   })
 
-  it('logs unknown episodes to the console and does not show an alert', async () => {
+  it('redirects to home when podcastId is invalid', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     const repository: PodcastRepository = {
-      getTopPodcasts: vi.fn(),
+      getTopPodcasts: vi.fn().mockResolvedValue([]),
+      getPodcastDetail: vi.fn(),
+    }
+
+    renderEpisodeDetail(repository, {
+      path: '/podcast/not-valid/episode/1001',
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('searchbox')).toBeInTheDocument()
+    })
+
+    expect(repository.getPodcastDetail).not.toHaveBeenCalled()
+    expect(consoleError).toHaveBeenCalled()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+  })
+
+  it('redirects to the podcast detail when episodeId is malformed', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const repository: PodcastRepository = {
+      getTopPodcasts: vi.fn().mockResolvedValue([]),
       getPodcastDetail: vi.fn().mockResolvedValue(podcastDetailFixture),
     }
 
-    renderEpisodeDetail(repository, '/podcast/360084272/episode/missing')
+    renderEpisodeDetail(repository, {
+      path: '/podcast/360084272/episode/invalid',
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Episodes: 2')).toBeInTheDocument()
+    })
+
+    expect(consoleError).toHaveBeenCalled()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(
+      screen.queryByRole('heading', { name: 'Episode One' }),
+    ).not.toBeInTheDocument()
+  })
+
+  it('logs unknown episodes and redirects to the podcast detail', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const repository: PodcastRepository = {
+      getTopPodcasts: vi.fn().mockResolvedValue([]),
+      getPodcastDetail: vi.fn().mockResolvedValue(podcastDetailFixture),
+    }
+
+    renderEpisodeDetail(repository, {
+      path: '/podcast/360084272/episode/999999',
+    })
 
     await waitFor(() => {
       expect(consoleError).toHaveBeenCalled()
@@ -90,6 +157,27 @@ describe('EpisodeDetailView', () => {
     )
     expect(logged?.[0]).toMatchObject({ message: 'Episode not found' })
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
-    consoleError.mockRestore()
+
+    await waitFor(() => {
+      expect(screen.getByText('Episodes: 2')).toBeInTheDocument()
+    })
+  })
+
+  it('redirects to the podcast detail when episodeId is whitespace-only', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const repository: PodcastRepository = {
+      getTopPodcasts: vi.fn().mockResolvedValue([]),
+      getPodcastDetail: vi.fn().mockResolvedValue(podcastDetailFixture),
+    }
+
+    renderEpisodeDetail(repository, {
+      path: '/podcast/360084272/episode/%20',
+    })
+
+    await waitFor(() => {
+      expect(screen.getByText('Episodes: 2')).toBeInTheDocument()
+    })
+
+    expect(consoleError).toHaveBeenCalled()
   })
 })

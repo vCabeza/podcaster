@@ -57,6 +57,7 @@ describe('usePodcastDetail', () => {
       expect(result.current.podcast?.id).toBe('360084272')
     })
 
+    expect(result.current.hasResolved).toBe(true)
     expect(repository.getPodcastDetail).toHaveBeenCalledWith('360084272')
   })
 
@@ -74,26 +75,26 @@ describe('usePodcastDetail', () => {
     )
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
+      expect(result.current.hasResolved).toBe(true)
     })
 
     expect(result.current.podcast).toBeNull()
     expect(consoleError).toHaveBeenCalledWith(failure)
   })
 
-  it('logs when a podcast id is missing', async () => {
+  it('logs when a podcast id is missing or invalid', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     const repository: PodcastRepository = {
       getTopPodcasts: vi.fn(),
       getPodcastDetail: vi.fn(),
     }
 
-    const { result } = renderHook(() => usePodcastDetail(undefined, repository), {
+    const { result } = renderHook(() => usePodcastDetail('abc', repository), {
       wrapper: createWrapper(),
     })
 
     await waitFor(() => {
-      expect(consoleError).toHaveBeenCalled()
+      expect(result.current.hasResolved).toBe(true)
     })
 
     expect(result.current.podcast).toBeNull()
@@ -116,7 +117,7 @@ describe('usePodcastDetail', () => {
     )
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
+      expect(result.current.hasResolved).toBe(true)
     })
 
     const logged = consoleError.mock.calls[0]?.[0]

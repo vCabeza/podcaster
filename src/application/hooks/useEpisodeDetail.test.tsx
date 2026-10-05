@@ -33,6 +33,7 @@ describe('useEpisodeDetail', () => {
     })
 
     expect(result.current.podcast?.id).toBe('360084272')
+    expect(result.current.hasResolved).toBe(true)
   })
 
   it('logs when the episode id does not exist', async () => {
@@ -43,12 +44,12 @@ describe('useEpisodeDetail', () => {
     }
 
     const { result } = renderHook(
-      () => useEpisodeDetail('360084272', 'missing', repository),
+      () => useEpisodeDetail('360084272', '999999', repository),
       { wrapper: createWrapper() },
     )
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
+      expect(result.current.hasResolved).toBe(true)
       expect(result.current.episode).toBeNull()
     })
 
@@ -62,7 +63,7 @@ describe('useEpisodeDetail', () => {
     expect(logged?.[0]).toMatchObject({ message: 'Episode not found' })
   })
 
-  it('logs when an episode id is missing', async () => {
+  it('logs when an episode id is invalid', async () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     const repository: PodcastRepository = {
       getTopPodcasts: vi.fn(),
@@ -70,12 +71,12 @@ describe('useEpisodeDetail', () => {
     }
 
     const { result } = renderHook(
-      () => useEpisodeDetail('360084272', undefined, repository),
+      () => useEpisodeDetail('360084272', 'invalid', repository),
       { wrapper: createWrapper() },
     )
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
+      expect(result.current.hasResolved).toBe(true)
     })
 
     await waitFor(() => {
@@ -103,7 +104,7 @@ describe('useEpisodeDetail', () => {
     )
 
     await waitFor(() => {
-      expect(result.current.isLoading).toBe(false)
+      expect(result.current.hasResolved).toBe(true)
     })
 
     expect(result.current.podcast).toBeNull()

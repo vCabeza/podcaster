@@ -4,12 +4,14 @@ import type { PodcastDetail } from '../../domain/models/PodcastDetail'
 import type { PodcastRepository } from '../../domain/repositories/PodcastRepository'
 import { getDefaultPodcastRepository } from '../podcastRepository'
 import { logError } from '../utils/logError'
+import { isValidRouteId, normalizeRouteId } from '../utils/routeIds'
 import { usePodcastDetail } from './usePodcastDetail'
 
 export interface UseEpisodeDetailResult {
   podcast: PodcastDetail | null
   episode: Episode | null
   isLoading: boolean
+  hasResolved: boolean
 }
 
 export function useEpisodeDetail(
@@ -17,22 +19,33 @@ export function useEpisodeDetail(
   episodeId: string | undefined,
   repository: PodcastRepository = getDefaultPodcastRepository(),
 ): UseEpisodeDetailResult {
-  const { podcast, isLoading } = usePodcastDetail(podcastId, repository)
+  const {
+    podcast,
+    isLoading,
+    hasResolved: podcastResolved,
+  } = usePodcastDetail(podcastId, repository)
+
+  const episodeIdValid = isValidRouteId(episodeId)
 
   const episode = useMemo(() => {
-    if (podcast === null || episodeId === undefined || episodeId.trim() === '') {
+    if (podcast === null || !episodeIdValid || episodeId === undefined) {
       return null
     }
 
-    return podcast.episodes.find((item) => item.id === episodeId) ?? null
-  }, [podcast, episodeId])
+    const normalizedEpisodeId = normalizeRouteId(episodeId)
+    return (
+      podcast.episodes.find((item) => item.id === normalizedEpisodeId) ?? null
+    )
+  }, [podcast, episodeId, episodeIdValid])
+
+  const hasResolved = podcastResolved && !isLoading
 
   useEffect(() => {
-    if (isLoading) {
+    if (!hasResolved) {
       return
     }
 
-    if (episodeId === undefined || episodeId.trim() === '') {
+    if (!episodeIdValid) {
       logError(new Error('Episode id is required'), 'Episode id is required')
       return
     }
@@ -40,11 +53,12 @@ export function useEpisodeDetail(
     if (podcast !== null && episode === null) {
       logError(new Error('Episode not found'), 'Episode not found')
     }
-  }, [isLoading, podcast, episode, episodeId])
+  }, [hasResolved, podcast, episode, episodeIdValid])
 
   return {
     podcast,
     episode,
     isLoading,
+    hasResolved,
   }
 }

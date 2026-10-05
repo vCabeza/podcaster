@@ -4,10 +4,12 @@ import type { PodcastRepository } from '../../domain/repositories/PodcastReposit
 import { useLoading } from '../context/LoadingContext'
 import { getDefaultPodcastRepository } from '../podcastRepository'
 import { logError } from '../utils/logError'
+import { isValidRouteId, normalizeRouteId } from '../utils/routeIds'
 
 export interface UsePodcastDetailResult {
   podcast: PodcastDetail | null
   isLoading: boolean
+  hasResolved: boolean
 }
 
 export function usePodcastDetail(
@@ -16,17 +18,21 @@ export function usePodcastDetail(
 ): UsePodcastDetailResult {
   const { isLoading, startLoading, stopLoading } = useLoading()
   const [podcast, setPodcast] = useState<PodcastDetail | null>(null)
+  const [hasResolved, setHasResolved] = useState(false)
 
   useEffect(() => {
-    if (podcastId === undefined || podcastId.trim().length === 0) {
+    if (!isValidRouteId(podcastId)) {
       setPodcast(null)
+      setHasResolved(true)
       logError(new Error('Podcast id is required'), 'Podcast id is required')
       return
     }
 
-    const resolvedPodcastId = podcastId
+    const resolvedPodcastId = normalizeRouteId(podcastId)
     let cancelled = false
     let settled = false
+
+    setHasResolved(false)
 
     async function loadPodcastDetail() {
       startLoading()
@@ -46,6 +52,7 @@ export function usePodcastDetail(
         settled = true
 
         if (!cancelled) {
+          setHasResolved(true)
           stopLoading()
         }
       }
@@ -65,5 +72,6 @@ export function usePodcastDetail(
   return {
     podcast,
     isLoading,
+    hasResolved,
   }
 }

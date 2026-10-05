@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { Navigate, useParams } from 'react-router-dom'
 import type { PodcastRepository } from '../../domain/repositories/PodcastRepository'
 import { usePodcastDetail } from '../../application/hooks/usePodcastDetail'
 import { DetailPageLayout } from '../components/DetailPageLayout/DetailPageLayout'
@@ -13,9 +13,16 @@ export interface PodcastDetailViewProps {
 
 export function PodcastDetailView({ repository }: PodcastDetailViewProps) {
   const { podcastId } = useParams()
-  const { podcast, isLoading } = usePodcastDetail(podcastId, repository)
+  const { podcast, isLoading, hasResolved } = usePodcastDetail(
+    podcastId,
+    repository,
+  )
 
-  if (isLoading || podcast === null) {
+  if (hasResolved && podcast === null) {
+    return <Navigate to="/" replace />
+  }
+
+  if (!hasResolved || isLoading || podcast === null) {
     return null
   }
 
