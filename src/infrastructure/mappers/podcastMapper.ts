@@ -49,7 +49,6 @@ function mapFeedEntryToPodcast(entry: ITunesFeedEntryDTO): Podcast {
     title: entry['im:name']?.label ?? '',
     author: entry['im:artist']?.label ?? '',
     image: getLargestImageUrl(entry),
-    description: entry.summary?.label ?? '',
   }
 }
 
@@ -65,7 +64,6 @@ function mapLookupPodcastToDetailBase(
     title: podcast.collectionName,
     author: podcast.artistName,
     image: getPodcastArtworkUrl(podcast),
-    description: podcast.description ?? '',
   }
 }
 

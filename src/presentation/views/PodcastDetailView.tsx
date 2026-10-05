@@ -36,7 +36,6 @@ export function PodcastDetailView({ repository }: PodcastDetailViewProps) {
           title={podcast.title}
           author={podcast.author}
           image={podcast.image}
-          description={podcast.description}
         />
       }
     >

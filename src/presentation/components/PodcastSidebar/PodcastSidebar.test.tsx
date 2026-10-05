@@ -4,19 +4,26 @@ import { describe, expect, it } from 'vitest'
 import { podcastDetailFixture } from '../../views/fixtures/podcastDetail.fixture'
 import { PodcastSidebar } from './PodcastSidebar'
 
+const detailPath = `/podcast/${podcastDetailFixture.id}`
+const episodePath = `${detailPath}/episode/1001`
+const backLinkName = `Back to ${podcastDetailFixture.title} details`
+
+function renderSidebar(initialPath: string) {
+  return render(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <PodcastSidebar
+        podcastId={podcastDetailFixture.id}
+        title={podcastDetailFixture.title}
+        author={podcastDetailFixture.author}
+        image={podcastDetailFixture.image}
+      />
+    </MemoryRouter>,
+  )
+}
+
 describe('PodcastSidebar', () => {
-  it('renders artwork, title, author, description and detail links', () => {
-    render(
-      <MemoryRouter>
-        <PodcastSidebar
-          podcastId={podcastDetailFixture.id}
-          title={podcastDetailFixture.title}
-          author={podcastDetailFixture.author}
-          image={podcastDetailFixture.image}
-          description={podcastDetailFixture.description}
-        />
-      </MemoryRouter>,
-    )
+  it('renders artwork, title and author as static content on podcast detail', () => {
+    renderSidebar(detailPath)
 
     expect(
       screen.getByRole('complementary', { name: 'Podcast details' }),
@@ -27,21 +34,17 @@ describe('PodcastSidebar', () => {
     expect(
       screen.getByRole('heading', { name: podcastDetailFixture.title }),
     ).toBeInTheDocument()
+    expect(screen.getByText(`by ${podcastDetailFixture.author}`)).toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: backLinkName })).not.toBeInTheDocument()
+  })
 
-    expect(
-      screen.getByRole('link', {
-        name: `${podcastDetailFixture.title} cover`,
-      }),
-    ).toHaveAttribute('href', `/podcast/${podcastDetailFixture.id}`)
-    expect(
-      screen.getByRole('link', { name: podcastDetailFixture.title }),
-    ).toHaveAttribute('href', `/podcast/${podcastDetailFixture.id}`)
-    expect(
-      screen.getByRole('link', { name: `by ${podcastDetailFixture.author}` }),
-    ).toHaveAttribute('href', `/podcast/${podcastDetailFixture.id}`)
-    expect(screen.getByText('Description:')).toBeInTheDocument()
-    expect(
-      screen.getByText(podcastDetailFixture.description),
-    ).toBeInTheDocument()
+  it('renders a single detail link when on an episode route', () => {
+    renderSidebar(episodePath)
+
+    expect(screen.getByRole('link', { name: backLinkName })).toHaveAttribute(
+      'href',
+      detailPath,
+    )
+    expect(screen.getAllByRole('link')).toHaveLength(1)
   })
 })

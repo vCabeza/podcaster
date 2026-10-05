@@ -8,7 +8,6 @@ export interface ITunesLookupPodcastResultDTO {
   artistName: string
   artworkUrl600?: string
   artworkUrl100?: string
-  description?: string
 }
 
 export interface ITunesLookupEpisodeResultDTO {
@@ -80,8 +79,7 @@ function isITunesLookupPodcastResultDTO(
     (value.kind === undefined || isString(value.kind)) &&
     (value.wrapperType === undefined || isString(value.wrapperType)) &&
     (value.artworkUrl600 === undefined || isString(value.artworkUrl600)) &&
-    (value.artworkUrl100 === undefined || isString(value.artworkUrl100)) &&
-    (value.description === undefined || isString(value.description))
+    (value.artworkUrl100 === undefined || isString(value.artworkUrl100))
   )
 }
 

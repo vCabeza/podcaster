@@ -11,7 +11,6 @@ const podcastDetailFixture: PodcastDetail = {
   title: 'The Joe Rogan Experience',
   author: 'Joe Rogan',
   image: 'https://example.com/jre.jpg',
-  description: 'Long-form conversations.',
   episodes: [
     {
       id: '1001',

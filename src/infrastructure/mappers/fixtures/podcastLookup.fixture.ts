@@ -11,7 +11,6 @@ const lookupPayload = {
       artistName: 'Joe Rogan',
       artworkUrl600: 'https://example.com/jre-600.jpg',
       artworkUrl100: 'https://example.com/jre-100.jpg',
-      description: 'Long-form conversations.',
       trackId: 360084272,
       trackName: 'The Joe Rogan Experience',
     },

@@ -42,14 +42,12 @@ describe('mapITunesFeedToPodcasts', () => {
       title: 'The Joe Rogan Experience',
       author: 'Joe Rogan',
       image: 'https://example.com/image-170.jpg',
-      description: 'The Joe Rogan Experience podcast conversations.',
     })
     expect(podcasts[1]).toEqual({
       id: '1535809341',
       title: 'The Daily',
       author: 'The New York Times',
       image: 'https://example.com/daily-55.jpg',
-      description: '',
     })
   })
 
@@ -66,7 +64,6 @@ describe('mapITunesFeedToPodcasts', () => {
         title: 'Solo Podcast',
         author: 'Solo Author',
         image: '',
-        description: '',
       },
     ])
   })
@@ -90,7 +87,6 @@ describe('mapITunesFeedToPodcasts', () => {
         title: '',
         author: '',
         image: '',
-        description: '',
       },
     ])
   })
@@ -105,7 +101,6 @@ describe('mapITunesLookupToPodcastDetail', () => {
       title: 'The Joe Rogan Experience',
       author: 'Joe Rogan',
       image: 'https://example.com/jre-600.jpg',
-      description: 'Long-form conversations.',
       episodes: [
         {
           id: '1000600123456',

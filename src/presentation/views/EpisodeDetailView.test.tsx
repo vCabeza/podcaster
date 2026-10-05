@@ -55,15 +55,10 @@ describe('EpisodeDetailView', () => {
       screen.getByRole('complementary', { name: 'Podcast details' }),
     ).toBeInTheDocument()
 
-    const titleLinks = screen.getAllByRole('link', {
-      name: new RegExp(podcastDetailFixture.title),
-    })
-    expect(titleLinks.length).toBeGreaterThan(0)
-    titleLinks.forEach((link) => {
-      expect(link).toHaveAttribute('href', '/podcast/360084272')
-    })
     expect(
-      screen.getByRole('link', { name: `by ${podcastDetailFixture.author}` }),
+      screen.getByRole('link', {
+        name: `Back to ${podcastDetailFixture.title} details`,
+      }),
     ).toHaveAttribute('href', '/podcast/360084272')
 
     expect(screen.getByRole('link', { name: 'link' })).toHaveAttribute(

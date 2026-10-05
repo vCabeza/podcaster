@@ -52,6 +52,11 @@ describe('PodcastDetailView', () => {
     expect(
       screen.getAllByRole('heading', { name: podcastDetailFixture.title }).length,
     ).toBeGreaterThan(0)
+    expect(
+      screen.queryByRole('link', {
+        name: `Back to ${podcastDetailFixture.title} details`,
+      }),
+    ).not.toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Episode One' })).toHaveAttribute(
       'href',
       '/podcast/360084272/episode/1001',
