@@ -1,0 +1,67 @@
+import { Link } from 'react-router-dom'
+import './PodcastSidebar.css'
+
+export interface PodcastSidebarProps {
+  podcastId: string
+  title: string
+  author: string
+  image: string
+  description: string
+}
+
+export function PodcastSidebar({
+  podcastId,
+  title,
+  author,
+  image,
+  description,
+}: PodcastSidebarProps) {
+  const detailPath = `/podcast/${podcastId}`
+
+  return (
+    <aside className="podcast-sidebar" aria-label="Podcast information">
+      <div className="podcast-sidebar__card">
+        <Link to={detailPath} className="podcast-sidebar__artwork-link">
+          <img
+            className="podcast-sidebar__artwork"
+            src={image}
+            alt=""
+            width={220}
+            height={220}
+          />
+          <span className="visually-hidden">{title}</span>
+        </Link>
+
+        <hr className="podcast-sidebar__divider" />
+
+        <div className="podcast-sidebar__identity">
+          <h2 className="podcast-sidebar__title">
+            <Link to={detailPath} className="podcast-sidebar__title-link">
+              {title}
+            </Link>
+          </h2>
+          <p className="podcast-sidebar__author">
+            <Link to={detailPath} className="podcast-sidebar__author-link">
+              by {author}
+            </Link>
+          </p>
+        </div>
+
+        <hr className="podcast-sidebar__divider" />
+
+        <section
+          className="podcast-sidebar__description"
+          aria-labelledby={`podcast-description-${podcastId}`}
+        >
+          <h3
+            id={`podcast-description-${podcastId}`}
+            className="podcast-sidebar__description-heading"
+          >
+            Description:
+          </h3>
+          <p className="podcast-sidebar__description-body">{description}</p>
+        </section>
+      </div>
+    </aside>
+  )
+}

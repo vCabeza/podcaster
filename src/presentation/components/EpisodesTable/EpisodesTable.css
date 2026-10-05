@@ -1,0 +1,81 @@
+.episodes-table-card {
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.episodes-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.episodes-table th,
+.episodes-table td {
+  padding: 0.85rem 1rem;
+  border-bottom: 1px solid #e5e7eb;
+  text-align: left;
+  vertical-align: top;
+  font-size: 0.95rem;
+}
+
+.episodes-table th {
+  font-weight: 700;
+  color: #111827;
+  background: #ffffff;
+}
+
+.episodes-table th:nth-child(2),
+.episodes-table td:nth-child(2) {
+  width: 7.5rem;
+}
+
+.episodes-table th:nth-child(3),
+.episodes-table td:nth-child(3) {
+  width: 6.5rem;
+  text-align: right;
+}
+
+.episodes-table tbody tr:nth-child(odd) {
+  background: #ffffff;
+}
+
+.episodes-table tbody tr:nth-child(even) {
+  background: #f9fafb;
+}
+
+.episodes-table__title-link {
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.episodes-table__title-link:hover {
+  text-decoration: underline;
+}
+
+.episodes-table__title-link:focus {
+  outline: none;
+}
+
+.episodes-table__title-link:focus-visible {
+  outline: 2px solid #2563eb;
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.episodes-table__duration {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .episodes-table th:nth-child(2),
+  .episodes-table td:nth-child(2),
+  .episodes-table th:nth-child(3),
+  .episodes-table td:nth-child(3) {
+    width: auto;
+  }
+}

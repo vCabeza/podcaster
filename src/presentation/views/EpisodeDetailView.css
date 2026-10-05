@@ -1,0 +1,26 @@
+.episode-detail-view {
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+
+.episode-detail-view__content {
+  flex: 1;
+  min-width: 0;
+}
+
+.episode-detail-view__error {
+  margin: 2rem 0;
+  text-align: center;
+  color: #b91c1c;
+}
+
+@media (max-width: 900px) {
+  .episode-detail-view {
+    flex-direction: column;
+  }
+
+  .episode-detail-view .podcast-sidebar {
+    max-width: none;
+  }
+}

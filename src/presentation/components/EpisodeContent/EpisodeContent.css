@@ -1,0 +1,39 @@
+.episode-content {
+  background: #ffffff;
+  border-radius: 6px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+.episode-content__title {
+  margin: 0 0 1rem;
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.episode-content__description {
+  color: #374151;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.episode-content__description p {
+  margin: 0 0 0.75rem;
+}
+
+.episode-content__description p:last-child {
+  margin-bottom: 0;
+}
+
+.episode-content__description a {
+  color: #2563eb;
+}
+
+.episode-content__separator {
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+  margin: 1.25rem 0;
+}

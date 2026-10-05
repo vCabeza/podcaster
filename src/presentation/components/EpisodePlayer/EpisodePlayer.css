@@ -1,0 +1,8 @@
+.episode-player {
+  width: 100%;
+}
+
+.episode-player__audio {
+  width: 100%;
+  display: block;
+}

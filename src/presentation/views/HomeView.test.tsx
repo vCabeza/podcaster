@@ -1,17 +1,24 @@
-import { render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
-import {
-  createMemoryRouter,
-  RouterProvider,
-} from 'react-router-dom'
+import { createMemoryRouter, RouterProvider, useParams } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { LoadingProvider } from '../../application/context/LoadingContext'
 import { podcastFixtures } from '../../application/hooks/fixtures/podcasts.fixture'
 import type { PodcastRepository } from '../../domain/repositories/PodcastRepository'
 import { RootLayout } from '../layouts/RootLayout'
-import { PodcastDetailView } from './PodcastDetailView'
 import { HomeView } from './HomeView'
+
+function PodcastDetailStub() {
+  const { podcastId } = useParams()
+
+  return (
+    <section>
+      <h1>Podcast detail</h1>
+      <p>Details for podcast {podcastId} will appear here.</p>
+    </section>
+  )
+}
 
 function renderHome(repository: PodcastRepository) {
   const router = createMemoryRouter(
@@ -26,7 +33,7 @@ function renderHome(repository: PodcastRepository) {
           },
           {
             path: 'podcast/:podcastId',
-            element: <PodcastDetailView />,
+            element: <PodcastDetailStub />,
           },
         ],
       },
@@ -116,9 +123,7 @@ describe('HomeView', () => {
       await screen.findByRole('heading', { name: 'Podcast detail' }),
     ).toBeInTheDocument()
     expect(
-      within(screen.getByRole('main')).getByText(
-        'Details for podcast 360084272 will appear here.',
-      ),
+      screen.getByText('Details for podcast 360084272 will appear here.'),
     ).toBeInTheDocument()
   })
 
