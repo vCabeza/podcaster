@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { PodcastDetail } from '../../domain/models/PodcastDetail'
 import type { PodcastRepository } from '../../domain/repositories/PodcastRepository'
 import { LoadingProvider } from '../context/LoadingContext'
@@ -38,6 +38,10 @@ function createWrapper() {
 }
 
 describe('usePodcastDetail', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('loads podcast detail for a given id', async () => {
     const repository: PodcastRepository = {
       getTopPodcasts: vi.fn(),
@@ -53,14 +57,15 @@ describe('usePodcastDetail', () => {
       expect(result.current.podcast?.id).toBe('360084272')
     })
 
-    expect(result.current.error).toBeNull()
     expect(repository.getPodcastDetail).toHaveBeenCalledWith('360084272')
   })
 
-  it('exposes repository errors', async () => {
+  it('logs repository errors to the console', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const failure = new Error('Lookup failed')
     const repository: PodcastRepository = {
       getTopPodcasts: vi.fn(),
-      getPodcastDetail: vi.fn().mockRejectedValue(new Error('Lookup failed')),
+      getPodcastDetail: vi.fn().mockRejectedValue(failure),
     }
 
     const { result } = renderHook(
@@ -69,11 +74,15 @@ describe('usePodcastDetail', () => {
     )
 
     await waitFor(() => {
-      expect(result.current.error).toBe('Lookup failed')
+      expect(result.current.isLoading).toBe(false)
     })
+
+    expect(result.current.podcast).toBeNull()
+    expect(consoleError).toHaveBeenCalledWith(failure)
   })
 
-  it('requires a podcast id', async () => {
+  it('logs when a podcast id is missing', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     const repository: PodcastRepository = {
       getTopPodcasts: vi.fn(),
       getPodcastDetail: vi.fn(),
@@ -84,13 +93,18 @@ describe('usePodcastDetail', () => {
     })
 
     await waitFor(() => {
-      expect(result.current.error).toBe('Podcast id is required')
+      expect(consoleError).toHaveBeenCalled()
     })
 
+    expect(result.current.podcast).toBeNull()
     expect(repository.getPodcastDetail).not.toHaveBeenCalled()
+    const logged = consoleError.mock.calls[0]?.[0]
+    expect(logged).toBeInstanceOf(Error)
+    expect(logged).toMatchObject({ message: 'Podcast id is required' })
   })
 
-  it('normalizes non-Error rejections', async () => {
+  it('logs a wrapped Error for non-Error rejections', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     const repository: PodcastRepository = {
       getTopPodcasts: vi.fn(),
       getPodcastDetail: vi.fn().mockRejectedValue('nope'),
@@ -102,7 +116,11 @@ describe('usePodcastDetail', () => {
     )
 
     await waitFor(() => {
-      expect(result.current.error).toBe('Unable to load podcast detail')
+      expect(result.current.isLoading).toBe(false)
     })
+
+    const logged = consoleError.mock.calls[0]?.[0]
+    expect(logged).toBeInstanceOf(Error)
+    expect(logged).toMatchObject({ message: 'Unable to load podcast detail' })
   })
 })

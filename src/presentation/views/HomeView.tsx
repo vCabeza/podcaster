@@ -10,7 +10,7 @@ export interface HomeViewProps {
 }
 
 export function HomeView({ repository }: HomeViewProps) {
-  const { podcasts, isLoading, error } = usePodcasts(repository)
+  const { podcasts, isLoading } = usePodcasts(repository)
   const { query, setQuery, filteredPodcasts, visibleCount } =
     usePodcastsFilter(podcasts)
 
@@ -27,15 +27,7 @@ export function HomeView({ repository }: HomeViewProps) {
         />
       </div>
 
-      {error !== null ? (
-        <p className="home-view__error" role="alert">
-          {error}
-        </p>
-      ) : null}
-
-      {!isLoading && error === null ? (
-        <PodcastGrid podcasts={filteredPodcasts} />
-      ) : null}
+      {!isLoading ? <PodcastGrid podcasts={filteredPodcasts} /> : null}
     </section>
   )
 }

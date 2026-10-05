@@ -12,12 +12,6 @@
   gap: 1rem;
 }
 
-.detail-page-layout__error {
-  margin: 2rem 0;
-  text-align: center;
-  color: var(--color-danger);
-}
-
 @media (max-width: 900px) {
   .detail-page-layout {
     flex-direction: column;

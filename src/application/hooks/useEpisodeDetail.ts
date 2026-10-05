@@ -1,15 +1,15 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import type { Episode } from '../../domain/models/Episode'
 import type { PodcastDetail } from '../../domain/models/PodcastDetail'
 import type { PodcastRepository } from '../../domain/repositories/PodcastRepository'
 import { getDefaultPodcastRepository } from '../podcastRepository'
+import { logError } from '../utils/logError'
 import { usePodcastDetail } from './usePodcastDetail'
 
 export interface UseEpisodeDetailResult {
   podcast: PodcastDetail | null
   episode: Episode | null
   isLoading: boolean
-  error: string | null
 }
 
 export function useEpisodeDetail(
@@ -17,62 +17,34 @@ export function useEpisodeDetail(
   episodeId: string | undefined,
   repository: PodcastRepository = getDefaultPodcastRepository(),
 ): UseEpisodeDetailResult {
-  const { podcast, isLoading, error } = usePodcastDetail(podcastId, repository)
+  const { podcast, isLoading } = usePodcastDetail(podcastId, repository)
 
   const episode = useMemo(() => {
     if (podcast === null || episodeId === undefined || episodeId.trim() === '') {
       return null
     }
 
-    return (
-      podcast.episodes.find((item) => item.id === episodeId) ?? null
-    )
+    return podcast.episodes.find((item) => item.id === episodeId) ?? null
   }, [podcast, episodeId])
 
-  const resolvedError = resolveEpisodeError({
-    podcastError: error,
-    isLoading,
-    podcast,
-    episode,
-    episodeId,
-  })
+  useEffect(() => {
+    if (isLoading) {
+      return
+    }
+
+    if (episodeId === undefined || episodeId.trim() === '') {
+      logError(new Error('Episode id is required'), 'Episode id is required')
+      return
+    }
+
+    if (podcast !== null && episode === null) {
+      logError(new Error('Episode not found'), 'Episode not found')
+    }
+  }, [isLoading, podcast, episode, episodeId])
 
   return {
     podcast,
     episode,
     isLoading,
-    error: resolvedError,
   }
-}
-
-function resolveEpisodeError({
-  podcastError,
-  isLoading,
-  podcast,
-  episode,
-  episodeId,
-}: {
-  podcastError: string | null
-  isLoading: boolean
-  podcast: PodcastDetail | null
-  episode: Episode | null
-  episodeId: string | undefined
-}): string | null {
-  if (podcastError !== null) {
-    return podcastError
-  }
-
-  if (isLoading) {
-    return null
-  }
-
-  if (episodeId === undefined || episodeId.trim() === '') {
-    return 'Episode id is required'
-  }
-
-  if (podcast !== null && episode === null) {
-    return 'Episode not found'
-  }
-
-  return null
 }

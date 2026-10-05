@@ -127,16 +127,21 @@ describe('HomeView', () => {
     ).toBeInTheDocument()
   })
 
-  it('shows an error alert when loading fails', async () => {
+  it('logs to the console when loading fails and does not show an alert', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const failure = new Error('Upstream failure')
     const repository: PodcastRepository = {
-      getTopPodcasts: vi.fn().mockRejectedValue(new Error('Upstream failure')),
+      getTopPodcasts: vi.fn().mockRejectedValue(failure),
       getPodcastDetail: vi.fn(),
     }
 
     renderHome(repository)
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Upstream failure',
-    )
+    await waitFor(() => {
+      expect(consoleError).toHaveBeenCalledWith(failure)
+    })
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    consoleError.mockRestore()
   })
 })

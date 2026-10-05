@@ -13,15 +13,7 @@ export interface PodcastDetailViewProps {
 
 export function PodcastDetailView({ repository }: PodcastDetailViewProps) {
   const { podcastId } = useParams()
-  const { podcast, isLoading, error } = usePodcastDetail(podcastId, repository)
-
-  if (error !== null) {
-    return (
-      <p className="detail-page-layout__error" role="alert">
-        {error}
-      </p>
-    )
-  }
+  const { podcast, isLoading } = usePodcastDetail(podcastId, repository)
 
   if (isLoading || podcast === null) {
     return null

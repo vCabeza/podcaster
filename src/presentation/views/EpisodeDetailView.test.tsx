@@ -72,7 +72,8 @@ describe('EpisodeDetailView', () => {
     )
   })
 
-  it('shows an accessible not-found alert for unknown episodes', async () => {
+  it('logs unknown episodes to the console and does not show an alert', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     const repository: PodcastRepository = {
       getTopPodcasts: vi.fn(),
       getPodcastDetail: vi.fn().mockResolvedValue(podcastDetailFixture),
@@ -80,8 +81,15 @@ describe('EpisodeDetailView', () => {
 
     renderEpisodeDetail(repository, '/podcast/360084272/episode/missing')
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Episode not found',
+    await waitFor(() => {
+      expect(consoleError).toHaveBeenCalled()
+    })
+
+    const logged = consoleError.mock.calls.find(
+      (call) => call[0] instanceof Error && call[0].message === 'Episode not found',
     )
+    expect(logged?.[0]).toMatchObject({ message: 'Episode not found' })
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    consoleError.mockRestore()
   })
 })

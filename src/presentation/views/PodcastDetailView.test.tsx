@@ -64,16 +64,21 @@ describe('PodcastDetailView', () => {
     expect(screen.getByRole('link', { name: 'Episode Two' })).toBeInTheDocument()
   })
 
-  it('shows an alert when the detail request fails', async () => {
+  it('logs to the console when the detail request fails and does not show an alert', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const failure = new Error('Detail unavailable')
     const repository: PodcastRepository = {
       getTopPodcasts: vi.fn(),
-      getPodcastDetail: vi.fn().mockRejectedValue(new Error('Detail unavailable')),
+      getPodcastDetail: vi.fn().mockRejectedValue(failure),
     }
 
     renderPodcastDetail(repository)
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Detail unavailable',
-    )
+    await waitFor(() => {
+      expect(consoleError).toHaveBeenCalledWith(failure)
+    })
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    consoleError.mockRestore()
   })
 })

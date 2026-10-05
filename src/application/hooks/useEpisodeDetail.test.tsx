@@ -1,6 +1,6 @@
 import { renderHook, waitFor } from '@testing-library/react'
 import type { ReactNode } from 'react'
-import { describe, expect, it, vi } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { PodcastRepository } from '../../domain/repositories/PodcastRepository'
 import { LoadingProvider } from '../context/LoadingContext'
 import { podcastDetailFixture } from '../../presentation/views/fixtures/podcastDetail.fixture'
@@ -13,6 +13,10 @@ function createWrapper() {
 }
 
 describe('useEpisodeDetail', () => {
+  afterEach(() => {
+    vi.restoreAllMocks()
+  })
+
   it('resolves the episode from podcast detail', async () => {
     const repository: PodcastRepository = {
       getTopPodcasts: vi.fn(),
@@ -29,10 +33,10 @@ describe('useEpisodeDetail', () => {
     })
 
     expect(result.current.podcast?.id).toBe('360084272')
-    expect(result.current.error).toBeNull()
   })
 
-  it('returns not found when the episode id does not exist', async () => {
+  it('logs when the episode id does not exist', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     const repository: PodcastRepository = {
       getTopPodcasts: vi.fn(),
       getPodcastDetail: vi.fn().mockResolvedValue(podcastDetailFixture),
@@ -44,11 +48,22 @@ describe('useEpisodeDetail', () => {
     )
 
     await waitFor(() => {
-      expect(result.current.error).toBe('Episode not found')
+      expect(result.current.isLoading).toBe(false)
+      expect(result.current.episode).toBeNull()
     })
+
+    await waitFor(() => {
+      expect(consoleError).toHaveBeenCalled()
+    })
+
+    const logged = consoleError.mock.calls.find(
+      (call) => call[0] instanceof Error && call[0].message === 'Episode not found',
+    )
+    expect(logged?.[0]).toMatchObject({ message: 'Episode not found' })
   })
 
-  it('requires an episode id', async () => {
+  it('logs when an episode id is missing', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
     const repository: PodcastRepository = {
       getTopPodcasts: vi.fn(),
       getPodcastDetail: vi.fn().mockResolvedValue(podcastDetailFixture),
@@ -60,14 +75,26 @@ describe('useEpisodeDetail', () => {
     )
 
     await waitFor(() => {
-      expect(result.current.error).toBe('Episode id is required')
+      expect(result.current.isLoading).toBe(false)
     })
+
+    await waitFor(() => {
+      expect(consoleError).toHaveBeenCalled()
+    })
+
+    const logged = consoleError.mock.calls.find(
+      (call) =>
+        call[0] instanceof Error && call[0].message === 'Episode id is required',
+    )
+    expect(logged?.[0]).toMatchObject({ message: 'Episode id is required' })
   })
 
-  it('propagates podcast lookup errors', async () => {
+  it('logs podcast lookup failures via usePodcastDetail', async () => {
+    const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
+    const failure = new Error('Lookup failed')
     const repository: PodcastRepository = {
       getTopPodcasts: vi.fn(),
-      getPodcastDetail: vi.fn().mockRejectedValue(new Error('Lookup failed')),
+      getPodcastDetail: vi.fn().mockRejectedValue(failure),
     }
 
     const { result } = renderHook(
@@ -76,7 +103,11 @@ describe('useEpisodeDetail', () => {
     )
 
     await waitFor(() => {
-      expect(result.current.error).toBe('Lookup failed')
+      expect(result.current.isLoading).toBe(false)
     })
+
+    expect(result.current.podcast).toBeNull()
+    expect(result.current.episode).toBeNull()
+    expect(consoleError).toHaveBeenCalledWith(failure)
   })
 })

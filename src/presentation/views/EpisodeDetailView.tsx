@@ -11,19 +11,11 @@ export interface EpisodeDetailViewProps {
 
 export function EpisodeDetailView({ repository }: EpisodeDetailViewProps) {
   const { podcastId, episodeId } = useParams()
-  const { podcast, episode, isLoading, error } = useEpisodeDetail(
+  const { podcast, episode, isLoading } = useEpisodeDetail(
     podcastId,
     episodeId,
     repository,
   )
-
-  if (error !== null) {
-    return (
-      <p className="detail-page-layout__error" role="alert">
-        {error}
-      </p>
-    )
-  }
 
   if (isLoading || podcast === null || episode === null) {
     return null

@@ -3,11 +3,11 @@ import type { Podcast } from '../../domain/models/Podcast'
 import type { PodcastRepository } from '../../domain/repositories/PodcastRepository'
 import { useLoading } from '../context/LoadingContext'
 import { getDefaultPodcastRepository } from '../podcastRepository'
+import { logError } from '../utils/logError'
 
 export interface UsePodcastsResult {
   podcasts: Podcast[]
   isLoading: boolean
-  error: string | null
   isEmpty: boolean
 }
 
@@ -16,7 +16,6 @@ export function usePodcasts(
 ): UsePodcastsResult {
   const { isLoading, startLoading, stopLoading } = useLoading()
   const [podcasts, setPodcasts] = useState<Podcast[]>([])
-  const [error, setError] = useState<string | null>(null)
   const [hasLoaded, setHasLoaded] = useState(false)
 
   useEffect(() => {
@@ -25,7 +24,6 @@ export function usePodcasts(
 
     async function loadPodcasts() {
       startLoading()
-      setError(null)
 
       try {
         const result = await repository.getTopPodcasts()
@@ -36,11 +34,7 @@ export function usePodcasts(
         }
       } catch (loadError: unknown) {
         if (!cancelled) {
-          const message =
-            loadError instanceof Error
-              ? loadError.message
-              : 'Unable to load podcasts'
-          setError(message)
+          logError(loadError, 'Unable to load podcasts')
           setPodcasts([])
           setHasLoaded(true)
         }
@@ -67,7 +61,6 @@ export function usePodcasts(
   return {
     podcasts,
     isLoading,
-    error,
-    isEmpty: hasLoaded && !isLoading && podcasts.length === 0 && error === null,
+    isEmpty: hasLoaded && !isLoading && podcasts.length === 0,
   }
 }

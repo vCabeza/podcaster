@@ -2,14 +2,3 @@
   display: flex;
   justify-content: flex-end;
 }
-
-.home-view__error,
-.home-view__empty {
-  margin: 2rem 0;
-  text-align: center;
-  color: #4b5563;
-}
-
-.home-view__error {
-  color: #b91c1c;
-}
