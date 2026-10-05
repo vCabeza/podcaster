@@ -1,6 +1,24 @@
 :root {
-  color: #111827;
-  background: #f9fafb;
+  --color-text: #111827;
+  --color-text-muted: #374151;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-surface: #ffffff;
+  --color-page: #f9fafb;
+  --color-border: #9ca3af;
+  --color-border-subtle: #d1d5db;
+  --color-zebra: #f3f4f6;
+  --color-danger: #b91c1c;
+  --focus-ring-color: #2563eb;
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 3px;
+  --radius-surface: 6px;
+  --shadow-surface: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --content-max-width: 1120px;
+  --sidebar-max-width: 280px;
+
+  color: var(--color-text);
+  background: var(--color-page);
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;

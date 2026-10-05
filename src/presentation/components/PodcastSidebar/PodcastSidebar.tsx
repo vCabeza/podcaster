@@ -1,4 +1,6 @@
 import { Link } from 'react-router-dom'
+import { PODCAST_SIDEBAR_LANDMARK_LABEL } from '../../constants/a11y'
+import { SurfaceCard } from '../SurfaceCard/SurfaceCard'
 import './PodcastSidebar.css'
 
 export interface PodcastSidebarProps {
@@ -17,19 +19,20 @@ export function PodcastSidebar({
   description,
 }: PodcastSidebarProps) {
   const detailPath = `/podcast/${podcastId}`
+  const coverAltText = `${title} cover`
+  const descriptionHeadingId = `podcast-description-${podcastId}`
 
   return (
-    <aside className="podcast-sidebar" aria-label="Podcast information">
-      <div className="podcast-sidebar__card">
+    <aside className="podcast-sidebar" aria-label={PODCAST_SIDEBAR_LANDMARK_LABEL}>
+      <SurfaceCard className="podcast-sidebar__card">
         <Link to={detailPath} className="podcast-sidebar__artwork-link">
           <img
             className="podcast-sidebar__artwork"
             src={image}
-            alt=""
+            alt={coverAltText}
             width={220}
             height={220}
           />
-          <span className="visually-hidden">{title}</span>
         </Link>
 
         <hr className="podcast-sidebar__divider" />
@@ -51,17 +54,17 @@ export function PodcastSidebar({
 
         <section
           className="podcast-sidebar__description"
-          aria-labelledby={`podcast-description-${podcastId}`}
+          aria-labelledby={descriptionHeadingId}
         >
           <h3
-            id={`podcast-description-${podcastId}`}
+            id={descriptionHeadingId}
             className="podcast-sidebar__description-heading"
           >
             Description:
           </h3>
           <p className="podcast-sidebar__description-body">{description}</p>
         </section>
-      </div>
+      </SurfaceCard>
     </aside>
   )
 }

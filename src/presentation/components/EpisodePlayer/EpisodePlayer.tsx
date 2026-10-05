@@ -8,6 +8,8 @@ export interface EpisodePlayerProps {
 export function EpisodePlayer({ audioUrl, title }: EpisodePlayerProps) {
   return (
     <div className="episode-player">
+      {/* Native podcast playback has no caption track available from the API. */}
+      {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
       <audio
         className="episode-player__audio"
         controls

@@ -1,6 +1,12 @@
-import type { MouseEvent } from 'react'
+import type { CSSProperties, MouseEvent } from 'react'
 import { Outlet } from 'react-router-dom'
 import { useNavigationLoading } from '../../application/hooks/useNavigationLoading'
+import {
+  LOADING_STATUS_MESSAGE,
+  MAIN_CONTENT_ID,
+  SKIP_TO_MAIN_CONTENT_LABEL,
+} from '../constants/a11y'
+import { CONTENT_MAX_WIDTH } from '../constants/layout'
 import { Header } from '../components/Header/Header'
 import './RootLayout.css'
 
@@ -9,27 +15,31 @@ export function RootLayout() {
 
   const handleSkipToMain = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault()
-    const mainContent = document.getElementById('main-content')
+    const mainContent = document.getElementById(MAIN_CONTENT_ID)
 
     if (mainContent instanceof HTMLElement) {
       mainContent.focus()
     }
   }
 
+  const contentTokens = {
+    '--content-max-width': CONTENT_MAX_WIDTH,
+  } as CSSProperties
+
   return (
-    <div className="root-layout">
+    <div className="root-layout" style={contentTokens}>
       <a
-        href="#main-content"
+        href={`#${MAIN_CONTENT_ID}`}
         className="skip-link"
         onClick={handleSkipToMain}
       >
-        Skip to main content
+        {SKIP_TO_MAIN_CONTENT_LABEL}
       </a>
 
       <Header isLoading={isLoading} />
 
       <main
-        id="main-content"
+        id={MAIN_CONTENT_ID}
         className="root-layout__main"
         role="main"
         tabIndex={-1}
@@ -37,7 +47,7 @@ export function RootLayout() {
       >
         {isLoading ? (
           <div className="visually-hidden" role="status" aria-live="polite">
-            Loading content...
+            {LOADING_STATUS_MESSAGE}
           </div>
         ) : null}
 

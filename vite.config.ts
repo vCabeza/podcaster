@@ -18,6 +18,8 @@ export default defineConfig({
         'src/**/*.d.ts',
         'src/**/*.test.{ts,tsx}',
         'src/**/fixtures/**',
+        'src/test/**',
+        'src/types/**',
       ],
       thresholds: {
         lines: 85,

@@ -52,12 +52,13 @@ describe('EpisodeDetailView', () => {
 
     expect(repository.getPodcastDetail).toHaveBeenCalledWith('360084272')
     expect(
-      screen.getByRole('complementary', { name: 'Podcast information' }),
+      screen.getByRole('complementary', { name: 'Podcast details' }),
     ).toBeInTheDocument()
 
     const titleLinks = screen.getAllByRole('link', {
-      name: podcastDetailFixture.title,
+      name: new RegExp(podcastDetailFixture.title),
     })
+    expect(titleLinks.length).toBeGreaterThan(0)
     titleLinks.forEach((link) => {
       expect(link).toHaveAttribute('href', '/podcast/360084272')
     })

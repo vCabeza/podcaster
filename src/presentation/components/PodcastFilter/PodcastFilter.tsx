@@ -17,6 +17,8 @@ export function PodcastFilter({
       <span
         className="podcast-filter__badge"
         aria-live="polite"
+        aria-atomic="true"
+        aria-label={`${visibleCount} podcasts`}
         data-testid="podcast-count-badge"
       >
         {visibleCount}

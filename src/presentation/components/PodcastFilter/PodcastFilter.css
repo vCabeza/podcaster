@@ -14,7 +14,7 @@
   height: 1.75rem;
   padding: 0 0.65rem;
   border-radius: 999px;
-  background: #2563eb;
+  background: var(--color-primary);
   color: #ffffff;
   font-size: 0.875rem;
   font-weight: 700;
@@ -29,10 +29,10 @@
 .podcast-filter__input {
   width: min(18rem, 70vw);
   padding: 0.55rem 0.75rem;
-  border: 1px solid #d1d5db;
+  border: 1px solid var(--color-border);
   border-radius: 0.375rem;
-  background: #ffffff;
-  color: #111827;
+  background: var(--color-surface);
+  color: var(--color-text);
   font: inherit;
 }
 
@@ -41,7 +41,7 @@
 }
 
 .podcast-filter__input:focus-visible {
-  border-color: #2563eb;
-  outline: 2px solid #2563eb;
+  border-color: var(--color-primary);
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
   outline-offset: 2px;
 }

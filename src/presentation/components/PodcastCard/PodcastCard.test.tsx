@@ -23,8 +23,11 @@ describe('PodcastCard', () => {
     ).toBeInTheDocument()
     expect(screen.getByText(`Author: ${podcast.author}`)).toBeInTheDocument()
     expect(
+      screen.getByRole('img', { name: `${podcast.title} cover` }),
+    ).toBeInTheDocument()
+    expect(
       screen.getByRole('link', {
-        name: `${podcast.title}. Author: ${podcast.author}`,
+        name: `${podcast.title} cover ${podcast.title} Author: ${podcast.author}`,
       }),
     ).toHaveAttribute('href', `/podcast/${podcast.id}`)
   })

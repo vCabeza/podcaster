@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { Episode } from '../../../domain/models/Episode'
 import { formatDate, formatDuration } from '../../../application/utils/formatters'
+import { SurfaceCard } from '../SurfaceCard/SurfaceCard'
 import './EpisodesTable.css'
 
 export interface EpisodesTableProps {
@@ -10,7 +11,7 @@ export interface EpisodesTableProps {
 
 export function EpisodesTable({ podcastId, episodes }: EpisodesTableProps) {
   return (
-    <div className="episodes-table-card">
+    <SurfaceCard className="episodes-table-card">
       <table className="episodes-table">
         <caption className="visually-hidden">Podcast episodes</caption>
         <thead>
@@ -31,7 +32,7 @@ export function EpisodesTable({ podcastId, episodes }: EpisodesTableProps) {
                   {episode.title}
                 </Link>
               </td>
-              <td>{formatDate(episode.releaseDate)}</td>
+              <td className="episodes-table__meta">{formatDate(episode.releaseDate)}</td>
               <td className="episodes-table__duration">
                 {formatDuration(episode.duration)}
               </td>
@@ -39,6 +40,6 @@ export function EpisodesTable({ podcastId, episodes }: EpisodesTableProps) {
           ))}
         </tbody>
       </table>
-    </div>
+    </SurfaceCard>
   )
 }

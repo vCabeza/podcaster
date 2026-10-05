@@ -90,7 +90,7 @@ describe('HomeView', () => {
     const { user } = renderHome(repository)
 
     const cardLink = await screen.findByRole('link', {
-      name: 'The Daily. Author: The New York Times',
+      name: /The Daily/,
     })
 
     await user.click(cardLink)
@@ -112,7 +112,7 @@ describe('HomeView', () => {
     const { user } = renderHome(repository)
 
     const cardLink = await screen.findByRole('link', {
-      name: 'The Joe Rogan Experience. Author: Joe Rogan',
+      name: /The Joe Rogan Experience/,
     })
 
     cardLink.focus()

@@ -1,9 +1,9 @@
 import { useParams } from 'react-router-dom'
 import type { PodcastRepository } from '../../domain/repositories/PodcastRepository'
 import { useEpisodeDetail } from '../../application/hooks/useEpisodeDetail'
+import { DetailPageLayout } from '../components/DetailPageLayout/DetailPageLayout'
 import { EpisodeContent } from '../components/EpisodeContent/EpisodeContent'
 import { PodcastSidebar } from '../components/PodcastSidebar/PodcastSidebar'
-import './EpisodeDetailView.css'
 
 export interface EpisodeDetailViewProps {
   repository?: PodcastRepository
@@ -19,7 +19,7 @@ export function EpisodeDetailView({ repository }: EpisodeDetailViewProps) {
 
   if (error !== null) {
     return (
-      <p className="episode-detail-view__error" role="alert">
+      <p className="detail-page-layout__error" role="alert">
         {error}
       </p>
     )
@@ -30,22 +30,19 @@ export function EpisodeDetailView({ repository }: EpisodeDetailViewProps) {
   }
 
   return (
-    <div className="episode-detail-view">
-      <h1 className="visually-hidden">
-        {episode.title} — {podcast.title}
-      </h1>
-
-      <PodcastSidebar
-        podcastId={podcast.id}
-        title={podcast.title}
-        author={podcast.author}
-        image={podcast.image}
-        description={podcast.description}
-      />
-
-      <div className="episode-detail-view__content">
-        <EpisodeContent episode={episode} />
-      </div>
-    </div>
+    <DetailPageLayout
+      pageTitle={`${episode.title} — ${podcast.title}`}
+      sidebar={
+        <PodcastSidebar
+          podcastId={podcast.id}
+          title={podcast.title}
+          author={podcast.author}
+          image={podcast.image}
+          description={podcast.description}
+        />
+      }
+    >
+      <EpisodeContent episode={episode} />
+    </DetailPageLayout>
   )
 }

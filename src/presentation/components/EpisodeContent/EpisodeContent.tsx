@@ -1,5 +1,6 @@
 import type { Episode } from '../../../domain/models/Episode'
 import { sanitizeHtml } from '../../../application/utils/sanitizeHtml'
+import { SurfaceCard } from '../SurfaceCard/SurfaceCard'
 import { EpisodePlayer } from '../EpisodePlayer/EpisodePlayer'
 import './EpisodeContent.css'
 
@@ -11,7 +12,11 @@ export function EpisodeContent({ episode }: EpisodeContentProps) {
   const sanitizedDescription = sanitizeHtml(episode.description)
 
   return (
-    <article className="episode-content" aria-labelledby="episode-title">
+    <SurfaceCard
+      as="article"
+      className="episode-content"
+      aria-labelledby="episode-title"
+    >
       <h2 id="episode-title" className="episode-content__title">
         {episode.title}
       </h2>
@@ -24,6 +29,6 @@ export function EpisodeContent({ episode }: EpisodeContentProps) {
       <hr className="episode-content__separator" />
 
       <EpisodePlayer audioUrl={episode.audioUrl} title={episode.title} />
-    </article>
+    </SurfaceCard>
   )
 }

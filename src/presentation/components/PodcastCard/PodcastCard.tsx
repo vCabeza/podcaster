@@ -9,16 +9,12 @@ export interface PodcastCardProps {
 export function PodcastCard({ podcast }: PodcastCardProps) {
   return (
     <article className="podcast-card">
-      <Link
-        to={`/podcast/${podcast.id}`}
-        className="podcast-card__link"
-        aria-label={`${podcast.title}. Author: ${podcast.author}`}
-      >
+      <Link to={`/podcast/${podcast.id}`} className="podcast-card__link">
         <div className="podcast-card__avatar-wrap">
           <img
             className="podcast-card__avatar"
             src={podcast.image}
-            alt=""
+            alt={`${podcast.title} cover`}
             width={120}
             height={120}
             loading="lazy"

@@ -19,24 +19,23 @@ describe('PodcastSidebar', () => {
     )
 
     expect(
-      screen.getByRole('complementary', { name: 'Podcast information' }),
+      screen.getByRole('complementary', { name: 'Podcast details' }),
     ).toBeInTheDocument()
-    expect(screen.getByRole('presentation')).toHaveAttribute(
-      'src',
-      podcastDetailFixture.image,
-    )
+    expect(
+      screen.getByRole('img', { name: `${podcastDetailFixture.title} cover` }),
+    ).toHaveAttribute('src', podcastDetailFixture.image)
     expect(
       screen.getByRole('heading', { name: podcastDetailFixture.title }),
     ).toBeInTheDocument()
 
-    const titleLinks = screen.getAllByRole('link', {
-      name: podcastDetailFixture.title,
-    })
-    expect(titleLinks.length).toBeGreaterThan(0)
-    titleLinks.forEach((link) => {
-      expect(link).toHaveAttribute('href', `/podcast/${podcastDetailFixture.id}`)
-    })
-
+    expect(
+      screen.getByRole('link', {
+        name: `${podcastDetailFixture.title} cover`,
+      }),
+    ).toHaveAttribute('href', `/podcast/${podcastDetailFixture.id}`)
+    expect(
+      screen.getByRole('link', { name: podcastDetailFixture.title }),
+    ).toHaveAttribute('href', `/podcast/${podcastDetailFixture.id}`)
     expect(
       screen.getByRole('link', { name: `by ${podcastDetailFixture.author}` }),
     ).toHaveAttribute('href', `/podcast/${podcastDetailFixture.id}`)

@@ -47,7 +47,7 @@ describe('PodcastDetailView', () => {
 
     expect(repository.getPodcastDetail).toHaveBeenCalledWith('360084272')
     expect(
-      screen.getByRole('complementary', { name: 'Podcast information' }),
+      screen.getByRole('complementary', { name: 'Podcast details' }),
     ).toBeInTheDocument()
     expect(
       screen.getAllByRole('heading', { name: podcastDetailFixture.title }).length,
